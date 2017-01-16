@@ -39,7 +39,12 @@ def webhook():
                     recipient_id = messaging_event["recipient"]["id"]  # the recipient's ID, which should be your page's facebook ID
                     message_text = messaging_event["message"]["text"]  # the message's text
 
-                    send_message(sender_id, "got it, thanks!")
+                    # let's assume that the Message Text is the name of a dish exactly... we can implement
+                    # more complicated pattern matching later on.
+
+
+
+                    send_message(sender_id, "Hello, I am Mr. Dish. I can show you what different dishes look like. Give me the name of one and I will do my best to help!")
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
