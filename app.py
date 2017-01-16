@@ -44,7 +44,11 @@ def webhook():
 
 
 
-                    send_message(sender_id, "Hello, I am Mr. Dish. I can show you what different dishes look like. Give me the name of one and I will do my best to help!", "bogusurl")
+                    # send_message(sender_id, "Hello, I am Mr. Dish. I can show you what different dishes look like. Give me the name of one and I will do my best to help!", "bogusurl")
+                    send_message(sender_id, "Here is what {} looks like".format(message_text))
+                    send_message(sender_id, "trashtext", "bogusurl")
+
+
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
@@ -74,7 +78,6 @@ def send_message(recipient_id, message_text, image_url=None):
                 "id": recipient_id
             },
         "message": {
-            "text": "Here is what I found for " + message_text + "!"
             "attachment": {
                 "type":"image",
                     "payload": {
