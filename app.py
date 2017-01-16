@@ -77,7 +77,7 @@ def send_message(recipient_id, message_text, image_url=None):
             "attachment": {
                 "type":"image",
                     "payload": {
-                        "url":"https://petersapparel.com/img/shirt.png"
+                        "url":"http://www.recipetineats.com/wp-content/uploads/2014/06/Pad-See-Ew-Thai-Noodles_2-1.jpg"
                     }
                 }
             }
