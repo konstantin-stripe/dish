@@ -3,7 +3,7 @@ import json
 import time
 from os import environ
 
-from apikey import *
+# from apikey import *
 
 class ImageFetcher(object):
 
