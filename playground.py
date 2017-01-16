@@ -1,23 +1,43 @@
 import requests
+import json
+import time
 
 from apikey import *
 
-base_api = 'https://api.gettyimages.com'
-connect_api = 'https://connect.gettyimages.com'
-token_endpoint = 'oauth2/token'
-search_endpoint = '/v3/seach/images'
-most_recent_token = None
-most_recent_token_time = 0
+class ImageFetcher(object):
 
-def get_image_url(query_text):
-    if not most_recent_token or time.time() - most_recent_token_time > 1500:
-        # rerequest token
-        payload = {'client_id': getty_api_key, 'client_secret': getty_api_secret, 'grant_type': 'client_credentials'}
-        token_url = '/'.join([connect_api, token_endpoint])
-        print token_url
-        response = requests.post(token_url, params=payload)
-        print response.text
-    else:
-        pass
+    def __init__(self):
+        self.JSON_HEADER = {'content-type': 'application/json'}
 
-get_image_url('foo')
+
+        self.base_api = 'https://api.gettyimages.com'
+        self.connect_api = 'https://connect.gettyimages.com'
+        self.token_endpoint = 'oauth2/token'
+        self.search_endpoint = 'v3/search/images'
+        self.most_recent_token = None
+        self.most_recent_token_time = 0
+
+    def query(self, query_text):
+        self._update_token()
+        headers = {'Api-Key': getty_api_key, 'Authorization': self.most_recent_token}
+        payload = {'phrase': query_text}
+        endpoint_url = '%s/%s' % (self.base_api, self.search_endpoint)
+        response = requests.get(endpoint_url, payload, headers=headers)
+        data = json.loads(response.text)
+        if 'images' in data and len(data['images']) > 0:
+            return data['images'][0]['display_sizes'][0]['uri']
+        return None
+
+    def _update_token(self):
+        if not self.most_recent_token or time.time() - self.most_recent_token_time > 1500:
+            # rerequest token
+            payload = {'client_id': getty_api_key, 'client_secret': getty_api_secret, 'grant_type': 'client_credentials'}
+            token_url = '%s/%s' % (self.connect_api, self.token_endpoint)
+            response = requests.post(token_url, payload)
+            if response.status_code == 200:
+                data = json.loads(response.text)
+                self.most_recent_token = data['access_token']
+                self.most_recent_token_time = time.time()
+
+i = ImageFetcher()
+i.query('foo')

@@ -5,15 +5,9 @@ import json
 
 import requests
 from flask import Flask, request
+from playground import ImageFetcher
 
 app = Flask(__name__)
-
-# api used for endpoint image search
-base_api = 'https://api.gettyimages.com'
-token_endpoint = '/oauth2/token'
-search_endpoint = '/v3/seach/images'
-most_recent_token = None
-most_recent_token_time = 0
 
 @app.route('/', methods=['GET'])
 def verify():
@@ -29,6 +23,7 @@ def verify():
 
 @app.route('/', methods=['POST'])
 def webhook():
+    image_fetcher = ImageFetcher()
 
     # endpoint for processing incoming messaging events
 
@@ -48,10 +43,11 @@ def webhook():
 
                     # let's assume that the Message Text is the name of a dish exactly... we can implement
                     # more complicated pattern matching later on.
+                    image_url = image_fetcher.query(message_text)
 
                     # send_message(sender_id, "Hello, I am Mr. Dish. I can show you what different dishes look like. Give me the name of one and I will do my best to help!", "bogusurl")
                     send_message(sender_id, "Here is what {} look(s) like".format(message_text.lower()))
-                    send_message(sender_id, "trashtext", "bogusurl")
+                    send_message(sender_id, "trashtext", image_url)
 
 
 
@@ -65,15 +61,6 @@ def webhook():
                     pass
 
     return "ok", 200
-
-def get_image_url(query_text):
-    if not most_recent_token or time.time() - most_recent_token_time > 1500:
-        # rerequest token
-        print 'rerequest token'
-    else:
-        pass
-
-
 
 def send_message(recipient_id, message_text, image_url=None):
 
