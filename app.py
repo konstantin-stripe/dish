@@ -74,6 +74,7 @@ def send_message(recipient_id, message_text, image_url=None):
                 "id": recipient_id
             },
         "message": {
+            "text": "Here is what I found for " + message_text + "!"
             "attachment": {
                 "type":"image",
                     "payload": {
