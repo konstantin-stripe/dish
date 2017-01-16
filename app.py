@@ -44,7 +44,7 @@ def webhook():
 
 
 
-                    send_message(sender_id, "Hello, I am Mr. Dish. I can show you what different dishes look like. Give me the name of one and I will do my best to help!")
+                    send_message(sender_id, "Hello, I am Mr. Dish. I can show you what different dishes look like. Give me the name of one and I will do my best to help!", "bogusurl")
 
                 if messaging_event.get("delivery"):  # delivery confirmation
                     pass
@@ -58,7 +58,7 @@ def webhook():
     return "ok", 200
 
 
-def send_message(recipient_id, message_text):
+def send_message(recipient_id, message_text, image_url=None):
 
     log("sending message to {recipient}: {text}".format(recipient=recipient_id, text=message_text))
 
@@ -68,14 +68,30 @@ def send_message(recipient_id, message_text):
     headers = {
         "Content-Type": "application/json"
     }
-    data = json.dumps({
-        "recipient": {
-            "id": recipient_id
-        },
+    if image_url:
+        data = json.dumps({
+            "recipient": {
+                "id": recipient_id
+            },
         "message": {
-            "text": message_text
-        }
-    })
+            "attachment": {
+                "type":"image",
+                    "payload": {
+                        "url":"https://petersapparel.com/img/shirt.png"
+                    }
+                }
+            }
+        })
+    else:
+        data = json.dumps({
+            "recipient": {
+                "id": recipient_id
+            },
+            "message": {
+                "text": message_text
+            }
+        })
+
     r = requests.post("https://graph.facebook.com/v2.6/me/messages", params=params, headers=headers, data=data)
     if r.status_code != 200:
         log(r.status_code)
